@@ -1,7 +1,4 @@
-# FunkcjoAproksymator by Tomasz Worotnicki
-
 import sys
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QSizePolicy, QPushButton, QLineEdit, QLabel, QGroupBox, \
     QComboBox, QCheckBox
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
@@ -16,10 +13,10 @@ class App(QMainWindow):
         super().__init__()
         self.left = 100
         self.top = 100
-        self.title = 'FunkcjoAproksymator by Tomasz Worotnicki'
+        self.title = 'Aproksymator Funkcji'
         self.width = 640
         self.height = 400
-        # inicjalizacje elementów z initUI
+        
         self.manual_insert = QGroupBox('Wprowadzenie ręczne:', self)
         self.manual_insert_x_label = QLabel(self.manual_insert)
         self.manual_insert_x = QLineEdit(self.manual_insert)
@@ -57,7 +54,6 @@ class App(QMainWindow):
         self.manual_insert_x.setToolTip('Punkt, który dodasz będzie miał następującą współrzędną y')
         self.manual_insert_x.move(20, 20)
         self.manual_insert_x.resize(100, 16)
-        # self.manual_insert_x.setText('20')
 
         self.manual_insert_y_label = QLabel(self.manual_insert)
         self.manual_insert_y_label.setText('y:')
@@ -67,7 +63,6 @@ class App(QMainWindow):
         self.manual_insert_y.setToolTip('Punkt, który dodasz będzie miał następującą współrzędną y')
         self.manual_insert_y.move(20, 40)
         self.manual_insert_y.resize(100, 16)
-        # self.manual_insert_y.setText('10')
 
         self.manual_insert_button.setText('Dodaj punkt')
         self.manual_insert_button.move(40, 60)
@@ -106,10 +101,6 @@ class App(QMainWindow):
 
         self.grid_label.move(533, 290)
 
-
-        # self.refresh_button = QLabel(self)
-        # self.refresh_button.move(510, 280)
-        # self.refresh_button.resize(81, 24)
         self.show()
 
     def grid_on_changed(self):
@@ -158,8 +149,6 @@ class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         super(PlotCanvas, self).__init__(fig)
-        # self.axes = fig.add_subplot(111)
-        # self.move(0, 0)
         self.setParent(parent)
         FigureCanvas.setSizePolicy(self,
                                    QSizePolicy.Expanding,
@@ -218,14 +207,8 @@ class PlotCanvas(FigureCanvas):
         self.draw()
 
     def add_point(self, point):
-        #if not point[0] or not point[1]:
-        #    return
         self.data.append(point)
         self.data.sort(key=lambda p: p[0])
-        # x0, y0, x1, y1 = self.ax.viewLim.extents
-        # self.ax.cla()
-        # self.ax.autoscale(False)
-        # self.ax.axis([x0, x1, y0, y1])
         self.select_point = 0
         self.parent().refresh_select_point_combo()
         self.draw()
@@ -277,52 +260,7 @@ class PlotCanvas(FigureCanvas):
             x1.append(self.data[i][1])
         return avg, x0, x1
 
-    #def interp_sine(self,data_begin,data_end):
-
-
-    # def interp_sine(self, data_begin, data_end):
-    #     # tutaj ma być dedykowana funkcja parsująca dane!
-    #     avg = (data_end - data_begin) / 400
-    #     x0 = []
-    #     x1 = []
-    #     for i in range(len(self.data)):
-    #             x0.append(self.data[i][0])
-    #             x1.append(self.data[i][1])
-    #     print([x0, x1])
-    #     try:
-    #         poly = rfft(x1)
-    #         # print(self.data)
-    #         # print(poly)
-    #         print(data_begin, data_end)
-    #         #for i in arange(data_begin, data_end + avg, avg):
-    #         temp = irfft(poly[0:3])
-    #         print(temp)
-    #             # self.interp_data.append([i, temp])
-    #
-    #     except ValueError:
-    #         return
-
-    # def interp_sine(self, data_begin, data_end):
-    #     # tutaj ma być dedykowana funkcja parsująca dane!
-    #     avg = (data_end - data_begin) / 400
-    #     x0 = []
-    #     x1 = []
-    #     for i in range(len(self.data)):
-    #         x0.append(arcsin(((self.data[i][0] + 1) % 2) - 1))
-    #         x1.append(self.data[i][1])
-    #     print([x0, x1])
-    #     try:
-    #         poly = polyfit(x0, x1, min(len(self.data) - 1, 1))
-    #         # print(data_begin, data_end)
-    #         for i in arange(data_begin, data_end + avg, avg):
-    #             temp = poly[0] * sin(i) + poly[1]
-    #             self.interp_data.append([i, temp])
-    #
-    #     except ValueError:
-    #         return
-
     def interp_exponential(self, data_begin, data_end, tab):
-        # tutaj ma być dedykowana funkcja parsująca dane!
         avg = (data_end - data_begin) / 400
         x0 = []
         x1 = []
@@ -346,7 +284,6 @@ class PlotCanvas(FigureCanvas):
             return
 
     def interp_logarithmic(self, data_begin, data_end, tab):
-        # tutaj ma być dedykowana funkcja parsująca dane!
         avg = (data_end - data_begin) / 400
         x0 = []
         x1 = []
@@ -356,7 +293,6 @@ class PlotCanvas(FigureCanvas):
                 x1.append(self.data[i][1])
         try:
             poly = polyfit(log(x0), x1, min(len(self.data) - 1, 1))
-            # print(data_begin, data_end)
             for i in arange(data_begin, data_end + avg, avg):
                 if i > 0:
                     temp = poly[0] * log(i) + poly[1]
@@ -376,7 +312,6 @@ class PlotCanvas(FigureCanvas):
         try:
             poly = polyfit(x0, x1, min(len(self.data) - 1, 10))
             poly = poly[::-1]
-            # print(data_begin, data_end)
             for i in arange(data_begin, data_end + avg, avg):
                 temp = 0
                 for j in range(len(poly)):
@@ -391,7 +326,6 @@ class PlotCanvas(FigureCanvas):
         try:
             poly = polyfit(x0, x1, len(self.data) - 1)
             poly = poly[::-1]
-            # print(data_begin, data_end)
             for i in arange(data_begin, data_end + avg, avg):
                 temp = 0
                 for j in range(len(poly)):
@@ -406,7 +340,6 @@ class PlotCanvas(FigureCanvas):
         try:
             poly = polyfit(x0, x1, min(len(self.data) - 1, 1))
             poly = poly[::-1]
-            # print(data_begin, data_end)
             for i in arange(data_begin, data_end + avg, avg):
                 temp = 0
                 for j in range(len(poly)):
@@ -421,7 +354,6 @@ class PlotCanvas(FigureCanvas):
         try:
             poly = polyfit(x0, x1, min(len(self.data) - 1, 2))
             poly = poly[::-1]
-            # print(data_begin, data_end)
             for i in arange(data_begin, data_end + avg, avg):
                 temp = 0
                 for j in range(len(poly)):
